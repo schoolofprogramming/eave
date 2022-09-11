@@ -1,36 +1,69 @@
-import { VoiceState } from "discord.js"
+import { TextChannel, VoiceState } from "discord.js"
 import { VoiceActivity } from "../VoiceActivity"
 
 // The minimum number of users to be present in a voice chat to start
 // accounting for activity.
 const MIN_MEMBER_COUNT = 2
 
+const units = ['s', 'm', 'h']
+
 class VoiceStateUpdateHandler {
+	channel: TextChannel | null
+	setChannel(channel: TextChannel) {
+		this.channel = channel
+	}
+
 	handle(oldState: VoiceState, newState: VoiceState) {
 		let newMemberCount = newState.channel?.members.size || 0
 		let oldMemberCount = oldState.channel?.members.size || 0
 
+		console.log(`Members in ${oldState.channel?.name} (old): ${oldMemberCount}`)
+		console.log(`Members in ${newState.channel?.name} (new): ${newMemberCount}`)
+
 		// If nobody joined or left the chat, we have nothing to do.
-		if (oldState.channel == newState.channel) {
+		if (oldState.channel === newState.channel) {
 			console.log("Nobody left or joined a voice chat")
 			return
 		}
 
-		if (newMemberCount >= MIN_MEMBER_COUNT) {
-			// TODO: Start counting activity time for new channel
-			this.state.start()
+		let change = oldState.channel == null
+			? 'entered' : newState.channel == null
+			? 'left'    : 'moved'
+
+		console.log(`${newState.member?.displayName} ${change}: ${oldState.channel?.name} -> ${newState.channel?.name}`);
+
+		const seconds = ((newMemberCount >= MIN_MEMBER_COUNT)
+			? this.state.start : (oldMemberCount < MIN_MEMBER_COUNT)
+			? this.state.stop  : () => {}).bind(this.state)()
+
+		if (seconds == null)
+			return
+
+		const hours = seconds / 3600
+		const minutes = seconds / 60
+
+		const time = [Math.floor(seconds) % 60, Math.floor(minutes), Math.floor(hours)]
+
+		let time_log = []
+
+		for (let i = 0;	i < 3; i++) {
+			if (time[i] === 0)
+				break
+			time_log.push(`${time[i]}${units[i]}`)
 		}
 
-		if (oldMemberCount < MIN_MEMBER_COUNT) {
-			// TODO: Stop counting activity time for old channel
-			this.state.stop()
-		}
+		time_log.reverse()
+		const time_log_str = time_log.join(' ')
 
-		console.log(`Members in old voice: ${oldMemberCount}`)
-		console.log(`Members in new voice: ${newMemberCount}`)
+		console.log(`Voice Activity Duration: ${time_log_str}`)
+		this.channel?.send(`Previous voice chat session lasted for *${time_log_str}*.`)
+
+		this.state.stop()
 	}
 
-	constructor(public state: VoiceActivity) {}
+	constructor(public state: VoiceActivity) {
+		this.channel = null
+	}
 }
 
 export { VoiceStateUpdateHandler }
