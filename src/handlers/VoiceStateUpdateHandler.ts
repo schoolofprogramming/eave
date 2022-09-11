@@ -9,6 +9,7 @@ const units = ['s', 'm', 'h']
 
 class VoiceStateUpdateHandler {
 	channel: TextChannel | null
+
 	setChannel(channel: TextChannel) {
 		this.channel = channel
 	}
@@ -26,15 +27,29 @@ class VoiceStateUpdateHandler {
 			return
 		}
 
+		// If the channel is `null` in the `oldState`, it means
+		// that the user newly joined voice, otherwise
+		// if the channel is `null` in the `newState`, it means
+		// that the user left the server.
+		// If neither of the channels are `null`, it means the user
+		// moved from one VC to another, as both of them being the same
+		// is handled previously.
 		let change = oldState.channel == null
 			? 'entered' : newState.channel == null
 			? 'left'    : 'moved'
 
 		console.log(`${newState.member?.displayName} ${change}: ${oldState.channel?.name} -> ${newState.channel?.name}`);
 
+		// If the new member count is greater than the threshold, we should
+		// start tracking the activit (if the activity was already being
+		// tracked, the state will be untouched), otherwise if the old member
+		// count drops below the threshold, stop tracking the activity and send
+		// out a message with the duration of the session (if the activity
+		// tracking was already stopped, the value returned will be `null`, else
+		// will be equal the number of seconds the session was active for.
 		const seconds = ((newMemberCount >= MIN_MEMBER_COUNT)
 			? this.state.start : (oldMemberCount < MIN_MEMBER_COUNT)
-			? this.state.stop  : () => {}).bind(this.state)()
+			? this.state.stop  : () => null).bind(this.state)()
 
 		if (seconds == null)
 			return
