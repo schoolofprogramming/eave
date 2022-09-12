@@ -57,7 +57,7 @@ class VoiceStateUpdateHandler {
 		const hours = seconds / 3600
 		const minutes = seconds / 60
 
-		const time = [Math.floor(seconds) % 60, Math.floor(minutes), Math.floor(hours)]
+		const time = [Math.floor(seconds) % 60, Math.floor(minutes) % 60, Math.floor(hours)]
 
 		let time_log = []
 
