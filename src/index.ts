@@ -21,8 +21,6 @@ import { VoiceActivity } from "./VoiceActivity"
 		updateHandler.setChannel(channel)
 	})
 
-
-
 	BOT.on(Events.VoiceStateUpdate, updateHandler.handle.bind(updateHandler))
 
 	await BOT.login(process.env.BOT_TOKEN)
