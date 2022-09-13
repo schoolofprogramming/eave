@@ -53,11 +53,6 @@ class VoiceActivity {
 		// Get the number of seconds that have passed from when `startTime` was set.
 		const seconds = (currentTime - this.startTime) / 1000
 
-		// TODO: Wait for a specific amount of time before actually stopping to
-		// track the activity to account for temporary disconnects and other similar
-		// scenarios.
-		// (This should probably be handled in a different place.)
-
 		this.state.stop()
 
 		return seconds

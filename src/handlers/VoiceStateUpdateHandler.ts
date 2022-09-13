@@ -4,6 +4,9 @@ import { VoiceActivity } from "../VoiceActivity"
 // The minimum number of users to be present in a voice chat to start
 // accounting for activity.
 const MIN_MEMBER_COUNT = 2
+// Then minimum number of seconds a Voice Chat Session should last to be
+// considered worthy of reporting.
+const MIN_VC_SESSION_DURATION = 30
 
 const units = ['s', 'm', 'h']
 
@@ -51,7 +54,9 @@ class VoiceStateUpdateHandler {
 			? this.state.start : (oldMemberCount < MIN_MEMBER_COUNT)
 			? this.state.stop  : () => null).bind(this.state)()
 
-		if (seconds == null)
+		// If the duration of the voice chat session is less than `MIN_VC_SESSION_DURATION` seconds,
+		// we don't want to report it as it was most probably an insignificant session.
+		if (seconds == null || seconds < MIN_VC_SESSION_DURATION)
 			return
 
 		const hours = seconds / 3600
