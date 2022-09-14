@@ -1,3 +1,4 @@
+import { secureHeapUsed } from "crypto"
 import { TextChannel, VoiceState } from "discord.js"
 import { VoiceActivity } from "../VoiceActivity"
 
@@ -10,22 +11,29 @@ const MIN_VC_SESSION_DURATION = 30
 
 const units = ['s', 'm', 'h']
 
-function getTimeString(seconds: number): string {
+function getSecondMinuteHours(seconds: number): number[] {
 	const hours = seconds / 3600
 	const minutes = seconds / 60
 
 	const time = [Math.floor(seconds) % 60, Math.floor(minutes) % 60, Math.floor(hours)]
 
-	let time_log = []
+	let second_minute_hours = []
 
 	for (let i = 0;	i < 3; i++) {
 		if (time[i] === 0)
 			break
-		time_log.push(`${time[i]}${units[i]}`)
+		second_minute_hours.push(time[i])
 	}
 
-	time_log.reverse()
-	return time_log.join(' ')
+	return second_minute_hours
+}
+
+function timeArrayToString(timeArray: number[], unitIndex: number = 0): string[] {
+	return timeArray.map((v, i) => `${v.toString()}${units[i + unitIndex]}`).reverse()
+}
+
+function getTimeString(seconds: number): string {
+	return timeArrayToString(getSecondMinuteHours(seconds)).join(' ')
 }
 
 class VoiceStateUpdateHandler {
@@ -86,11 +94,12 @@ class VoiceStateUpdateHandler {
 	}
 
 	activityDuration(): string | null {
-		if (!this.voiceActivity.state.is_active)
+		if (!this.voiceActivity.state.is_active) {
 			return null
+		}
 
-		const seconds = Date.now() - this.voiceActivity.startTime
-		return getTimeString(seconds)
+		const seconds = (Date.now() - this.voiceActivity.startTime) / 1000
+		return timeArrayToString(getSecondMinuteHours(seconds).slice(1), 1).join(' ')
 	}
 
 	constructor(public voiceActivity: VoiceActivity) {

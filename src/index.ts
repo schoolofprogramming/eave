@@ -22,10 +22,12 @@ import { VoiceActivity } from "./VoiceActivity"
 
 		setInterval(() => {
 			const duration = updateHandler.activityDuration()
-			const message = duration ? `people in VC, since ${duration}...` : 'Voice Channels'
+			const message = duration ? `people in VC, since ${duration}` : 'Voice Channels'
 
-			BOT.user?.setActivity(message, { type: ActivityType.Watching, name: 'Maybe' })
-		}, 60)
+			console.log(duration)
+
+			BOT.user?.setActivity(`over ${message}...`, { type: ActivityType.Watching, name: 'Maybe' })
+		}, 60000)
 	})
 
 	BOT.on(Events.VoiceStateUpdate, updateHandler.handle.bind(updateHandler))
