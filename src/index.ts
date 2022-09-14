@@ -1,4 +1,4 @@
-import { Client, Events, TextChannel } from "discord.js"
+import { ActivityType, Client, Events, TextChannel } from "discord.js"
 import { IntentOptions } from "./config/IntentOptions"
 import { VoiceStateUpdateHandler } from "./handlers/VoiceStateUpdateHandler"
 import { VoiceActivity } from "./VoiceActivity"
@@ -19,6 +19,13 @@ import { VoiceActivity } from "./VoiceActivity"
 		}
 
 		updateHandler.setChannel(channel)
+
+		setInterval(() => {
+			const duration = updateHandler.activityDuration()
+			const message = duration ? `people in VC, since ${duration}...` : 'Voice Channels'
+
+			BOT.user?.setActivity(message, { type: ActivityType.Watching, name: 'Maybe' })
+		}, 60)
 	})
 
 	BOT.on(Events.VoiceStateUpdate, updateHandler.handle.bind(updateHandler))

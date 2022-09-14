@@ -10,6 +10,24 @@ const MIN_VC_SESSION_DURATION = 30
 
 const units = ['s', 'm', 'h']
 
+function getTimeString(seconds: number): string {
+	const hours = seconds / 3600
+	const minutes = seconds / 60
+
+	const time = [Math.floor(seconds) % 60, Math.floor(minutes) % 60, Math.floor(hours)]
+
+	let time_log = []
+
+	for (let i = 0;	i < 3; i++) {
+		if (time[i] === 0)
+			break
+		time_log.push(`${time[i]}${units[i]}`)
+	}
+
+	time_log.reverse()
+	return time_log.join(' ')
+}
+
 class VoiceStateUpdateHandler {
 	channel: TextChannel | null
 
@@ -45,43 +63,37 @@ class VoiceStateUpdateHandler {
 
 		// If the new member count is greater than the threshold, we should
 		// start tracking the activit (if the activity was already being
-		// tracked, the state will be untouched), otherwise if the old member
+		// tracked, the voiceActivity will be untouched), otherwise if the old member
 		// count drops below the threshold, stop tracking the activity and send
 		// out a message with the duration of the session (if the activity
 		// tracking was already stopped, the value returned will be `null`, else
 		// will be equal the number of seconds the session was active for.
 		const seconds = ((newMemberCount >= MIN_MEMBER_COUNT)
-			? this.state.start : (oldMemberCount < MIN_MEMBER_COUNT)
-			? this.state.stop  : () => null).bind(this.state)()
+			? this.voiceActivity.start : (oldMemberCount < MIN_MEMBER_COUNT)
+			? this.voiceActivity.stop  : () => null).bind(this.voiceActivity)()
 
 		// If the duration of the voice chat session is less than `MIN_VC_SESSION_DURATION` seconds,
 		// we don't want to report it as it was most probably an insignificant session.
 		if (seconds == null || seconds < MIN_VC_SESSION_DURATION)
 			return
 
-		const hours = seconds / 3600
-		const minutes = seconds / 60
-
-		const time = [Math.floor(seconds) % 60, Math.floor(minutes) % 60, Math.floor(hours)]
-
-		let time_log = []
-
-		for (let i = 0;	i < 3; i++) {
-			if (time[i] === 0)
-				break
-			time_log.push(`${time[i]}${units[i]}`)
-		}
-
-		time_log.reverse()
-		const time_log_str = time_log.join(' ')
+		const time_log_str = getTimeString(seconds)
 
 		console.log(`Voice Activity Duration: ${time_log_str}`)
 		this.channel?.send(`Previous voice chat session lasted for *${time_log_str}*.`)
 
-		this.state.stop()
+		this.voiceActivity.stop()
 	}
 
-	constructor(public state: VoiceActivity) {
+	activityDuration(): string | null {
+		if (!this.voiceActivity.state.is_active)
+			return null
+
+		const seconds = Date.now() - this.voiceActivity.startTime
+		return getTimeString(seconds)
+	}
+
+	constructor(public voiceActivity: VoiceActivity) {
 		this.channel = null
 	}
 }
