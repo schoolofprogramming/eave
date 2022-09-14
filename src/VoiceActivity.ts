@@ -1,20 +1,16 @@
 class VoiceActivityState {
-	state: boolean
+	is_active: boolean
 
 	constructor() {
-		this.state = false
+		this.is_active = false
 	}
 
 	start() {
-		this.state ||= true
+		this.is_active ||= true
 	}
 
 	stop() {
-		this.state &&= false
-	}
-
-	is_active(): boolean {
-		return this.state
+		this.is_active &&= false
 	}
 }
 
@@ -29,7 +25,7 @@ class VoiceActivity {
 
 	start() {
 		// If the activity is already being tracked, do nothing.
-		if (this.state.is_active()) {
+		if (this.state.is_active) {
 			console.log('Voice Activity already being tracked')
 			return
 		}
@@ -43,7 +39,7 @@ class VoiceActivity {
 	stop(): number | null {
 		// If the tracking was already stopped, return null
 		// to signal that the caller need not log a message.
-		if (!this.state.is_active()) {
+		if (!this.state.is_active) {
 			console.log('Tracking is inactive, preventing another deactivation...')
 			return null
 		}
