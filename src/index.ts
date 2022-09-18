@@ -24,7 +24,7 @@ import { VoiceActivity } from "./VoiceActivity"
 			const duration = updateHandler.activityDuration()
 			const message = duration ? `people in VC, since ${duration}` : 'Voice Channels'
 
-			console.log(duration)
+			console.log(`Message: ${message}`)
 
 			BOT.user?.setActivity(`over ${message}...`, { type: ActivityType.Watching, name: 'Maybe' })
 		}, 60000)
