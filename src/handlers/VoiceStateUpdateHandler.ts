@@ -1,4 +1,3 @@
-import { secureHeapUsed } from "crypto"
 import { TextChannel, VoiceState } from "discord.js"
 import { VoiceActivity } from "../VoiceActivity"
 
