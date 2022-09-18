@@ -68,9 +68,29 @@ class VoiceStateUpdateHandler {
 
 		console.log(`${newState.member?.displayName} ${change}: ${oldState.channel?.name} -> ${newState.channel?.name}`);
 
+		// FIXME: Don't count the activity if people are in `AFK` channel.
+
+		// FIXME: Activity happening in channels other than active vc can break the logic.
+		//
+		// If there are two people in one VC, and a new person joins another VC,
+		// and leaves it to join another VC, other than the one where there were two already,
+		// this logic breaks.
+		//
+		// *Old State*
+		// Foo: 07734willy, theteachr
+		// Bar: ForgotMyLemonade
+		//
+		// *New State*
+		// Foo: 07734willy, theteachr
+		// Baz: ForgotMyLemonade
+		//
+		// `ForgotMyLemonade` jumped from `Bar` to `Baz`, `oldMemberCount` and `newMemberCount`
+		// equal `0` and `1`, less than the threshold, which will result in the activity being stopped,
+		// even though `07734willy` and `theteachr` were still having a discussion.
+		//
 		// If the new member count is greater than the threshold, we should
-		// start tracking the activit (if the activity was already being
-		// tracked, the voiceActivity will be untouched), otherwise if the old member
+		// start tracking the activity (if the activity was already being
+		// tracked, the `voiceActivity` will be untouched), otherwise if the old member
 		// count drops below the threshold, stop tracking the activity and send
 		// out a message with the duration of the session (if the activity
 		// tracking was already stopped, the value returned will be `null`, else
