@@ -8,31 +8,33 @@ const MIN_MEMBER_COUNT = 2
 // considered worthy of reporting.
 const MIN_VC_SESSION_DURATION = 30
 
-const units = ['s', 'm', 'h']
+const units = ['h', 'm', 's']
 
-function getSecondMinuteHours(seconds: number): number[] {
+function getHourMinuteSeconds(seconds: number): number[] {
 	const hours = seconds / 3600
 	const minutes = seconds / 60
 
-	const time = [Math.floor(seconds) % 60, Math.floor(minutes) % 60, Math.floor(hours)]
+	const time = [Math.floor(hours), Math.floor(minutes) % 60, Math.floor(seconds) % 60]
 
-	let second_minute_hours = []
+	let hour_minute_seconds = []
 
 	for (let i = 0;	i < 3; i++) {
-		if (time[i] === 0)
-			break
-		second_minute_hours.push(time[i])
+		hour_minute_seconds.push(time[i])
 	}
 
-	return second_minute_hours
+	return hour_minute_seconds
 }
 
-function timeArrayToString(timeArray: number[], unitIndex: number = 0): string[] {
-	return timeArray.map((v, i) => `${v.toString()}${units[i + unitIndex]}`).reverse()
+function timeArrayToString(timeArray: number[]): string {
+	return timeArray
+		.map((v, i) => [v, units[i]])
+		.filter(v => v[0])
+		.map(v => v.join(''))
+		.join(' ')
 }
 
 function getTimeString(seconds: number): string {
-	return timeArrayToString(getSecondMinuteHours(seconds)).join(' ')
+	return timeArrayToString(getHourMinuteSeconds(seconds))
 }
 
 class VoiceStateUpdateHandler {
@@ -108,8 +110,6 @@ class VoiceStateUpdateHandler {
 
 		console.log(`Voice Activity Duration: ${time_log_str}`)
 		this.channel?.send(`Previous voice chat session lasted for *${time_log_str}*.`)
-
-		this.voiceActivity.stop()
 	}
 
 	activityDuration(): string | null {
@@ -118,7 +118,7 @@ class VoiceStateUpdateHandler {
 		}
 
 		const seconds = (Date.now() - this.voiceActivity.startTime) / 1000
-		return timeArrayToString(getSecondMinuteHours(seconds).slice(1), 1).join(' ')
+		return timeArrayToString(getHourMinuteSeconds(seconds).slice(0, 2))
 	}
 
 	constructor(public voiceActivity: VoiceActivity) {
