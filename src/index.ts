@@ -1,4 +1,4 @@
-import { ActivityType, Client, Events, TextChannel } from "discord.js"
+import { Client, Events, TextChannel } from "discord.js"
 import { ActivityMsg } from "./ActivityMsg"
 import { IntentOptions } from "./config/IntentOptions"
 import { VoiceStateUpdateHandler } from "./handlers/VoiceStateUpdateHandler"
