@@ -1,4 +1,5 @@
 import { ActivityType, Client, Events, TextChannel } from "discord.js"
+import { ActivityMsg } from "./ActivityMsg"
 import { IntentOptions } from "./config/IntentOptions"
 import { VoiceStateUpdateHandler } from "./handlers/VoiceStateUpdateHandler"
 import { VoiceActivity } from "./VoiceActivity"
@@ -22,11 +23,11 @@ import { VoiceActivity } from "./VoiceActivity"
 
 		setInterval(() => {
 			const duration = updateHandler.activityDuration()
-			const message = duration ? `people in VC, since ${duration}` : 'Voice Channels'
+			const activity = new ActivityMsg(duration)
 
-			console.log(`Message: ${message}`)
+			console.log(`Message: ${activity.msg}`)
 
-			BOT.user?.setActivity(`over ${message}...`, { type: ActivityType.Watching, name: 'Maybe' })
+			BOT.user?.setActivity(activity.msg, { type: activity.name, name: 'Maybe' })
 		}, 60000)
 	})
 
@@ -35,4 +36,5 @@ import { VoiceActivity } from "./VoiceActivity"
 	await BOT.login(process.env.BOT_TOKEN)
 })()
 
+// TODO: Change status icon based on `VoiceActivity` state.
 // TODO: Account for disconnects due to bad internet.
