@@ -1,5 +1,5 @@
 import { Client, Events, TextChannel } from "discord.js"
-import { ActivityMsg } from "./ActivityMsg"
+import { ActivityStatus } from "./ActivityMsg"
 import { IntentOptions } from "./config/IntentOptions"
 import { VoiceStateUpdateHandler } from "./handlers/VoiceStateUpdateHandler"
 import { VoiceActivity } from "./VoiceActivity"
@@ -23,11 +23,12 @@ import { VoiceActivity } from "./VoiceActivity"
 
 		setInterval(() => {
 			const duration = updateHandler.activityDuration()
-			const activity = new ActivityMsg(duration)
+			const activity = new ActivityStatus(duration)
 
 			console.log(`Message: ${activity.msg}`)
 
 			BOT.user?.setActivity(activity.msg, { type: activity.name, name: 'Maybe' })
+			BOT.user?.setStatus(activity.status)
 		}, 60000)
 	})
 
