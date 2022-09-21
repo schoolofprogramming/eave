@@ -7,7 +7,7 @@ export class ActivityStatus {
 
 	constructor(duration: string | null) {
 		[this.name, this.msg, this.status] = duration
-			? [ActivityType.Listening, `since ${duration}`, PresenceUpdateStatus.Online]
+			? [ActivityType.Listening, `people since ${duration}`, PresenceUpdateStatus.Online]
 			: [ActivityType.Watching, 'for Voice Activity', PresenceUpdateStatus.Idle]
 	}
 }
