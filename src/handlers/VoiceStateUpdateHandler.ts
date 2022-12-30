@@ -89,7 +89,7 @@ class VoiceStateUpdateHandler {
 		// `ForgotMyLemonade` jumped from `Bar` to `Baz`, `oldMemberCount` and `newMemberCount`
 		// equal `0` and `1`, less than the threshold, which will result in the activity being stopped,
 		// even though `07734willy` and `theteachr` were still having a discussion.
-		//
+
 		// If the new member count is greater than the threshold, we should
 		// start tracking the activity (if the activity was already being
 		// tracked, the `voiceActivity` will be untouched), otherwise if the old member

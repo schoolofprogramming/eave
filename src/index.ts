@@ -37,5 +37,4 @@ import { VoiceActivity } from "./VoiceActivity"
 	await BOT.login(process.env.BOT_TOKEN)
 })()
 
-// TODO: Change status icon based on `VoiceActivity` state.
 // TODO: Account for disconnects due to bad internet.
