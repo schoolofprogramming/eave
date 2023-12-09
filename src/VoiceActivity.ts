@@ -1,36 +1,20 @@
-class VoiceActivityState {
-	is_active: boolean
-
-	constructor() {
-		this.is_active = false
-	}
-
-	start() {
-		this.is_active = true
-	}
-
-	stop() {
-		this.is_active = false
-	}
-}
-
 class VoiceActivity {
-	state: VoiceActivityState
+	isOn: boolean
 	startTime: EpochTimeStamp
 
 	constructor() {
-		this.state = new VoiceActivityState()
+		this.isOn = false
 		this.startTime = 0
 	}
 
 	start() {
 		// If the activity is already being tracked, do nothing.
-		if (this.state.is_active) {
+		if (this.isOn) {
 			console.log('Voice Activity already being tracked')
 			return
 		}
 
-		this.state.start()
+		this.isOn = true
 		this.startTime = Date.now()
 
 		console.log(`Started tracking voice activity`)
@@ -39,7 +23,7 @@ class VoiceActivity {
 	stop(): number | null {
 		// If the tracking was already stopped, return null
 		// to signal that the caller need not log a message.
-		if (!this.state.is_active) {
+		if (!this.isOn) {
 			console.log('Tracking is inactive, preventing another deactivation...')
 			return null
 		}
@@ -49,8 +33,7 @@ class VoiceActivity {
 		// Get the number of seconds that have passed from when `startTime` was set.
 		const seconds = (currentTime - this.startTime) / 1000
 
-		this.state.stop()
-
+		this.isOn = false
 		return seconds
 	}
 }

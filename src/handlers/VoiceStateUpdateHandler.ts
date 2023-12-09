@@ -115,7 +115,7 @@ class VoiceStateUpdateHandler {
 	}
 
 	activityDuration(): string | null {
-		if (!this.voiceActivity.state.is_active) {
+		if (!this.voiceActivity.isOn) {
 			return null
 		}
 
