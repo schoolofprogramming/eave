@@ -6,11 +6,11 @@ class VoiceActivityState {
 	}
 
 	start() {
-		this.is_active ||= true
+		this.is_active = true
 	}
 
 	stop() {
-		this.is_active &&= false
+		this.is_active = false
 	}
 }
 
