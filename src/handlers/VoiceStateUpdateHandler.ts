@@ -81,9 +81,11 @@ class VoiceStateUpdateHandler {
 		// *Old State*
 		// Foo: 07734willy, theteachr
 		// Bar: ForgotMyLemonade
+		// Baz:
 		//
 		// *New State*
 		// Foo: 07734willy, theteachr
+		// Bar:
 		// Baz: ForgotMyLemonade
 		//
 		// `ForgotMyLemonade` jumped from `Bar` to `Baz`, `oldMemberCount` and `newMemberCount`
@@ -92,14 +94,14 @@ class VoiceStateUpdateHandler {
 
 		// If the new member count is greater than the threshold, we should
 		// start tracking the activity (if the activity was already being
-		// tracked, the `voiceActivity` will be untouched), otherwise if the old member
+		// tracked, the `voiceActivity` will be untouched), otherwise, if the old member
 		// count drops below the threshold, stop tracking the activity and send
 		// out a message with the duration of the session (if the activity
 		// tracking was already stopped, the value returned will be `null`, else
 		// will be equal the number of seconds the session was active for.
 		const seconds = ((newMemberCount >= MIN_MEMBER_COUNT)
 			? this.voiceActivity.start : (oldMemberCount < MIN_MEMBER_COUNT)
-			? this.voiceActivity.stop  : () => null).bind(this.voiceActivity)()
+			? this.voiceActivity.stop  : () => null).bind(this.voiceActivity)() // XXX
 
 		// If the duration of the voice chat session is less than `MIN_VC_SESSION_DURATION` seconds,
 		// we don't want to report it as it was most probably an insignificant session.
@@ -109,7 +111,7 @@ class VoiceStateUpdateHandler {
 		const time_log_str = getTimeString(seconds)
 
 		console.log(`Voice Activity Duration: ${time_log_str}`)
-		this.channel?.send(`Previous voice chat session lasted for *${time_log_str}*.`)
+		this.channel?.send(`Previous voice chat lasted for *${time_log_str}*.`)
 	}
 
 	activityDuration(): string | null {
