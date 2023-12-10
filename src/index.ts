@@ -5,13 +5,13 @@ import { VoiceStateUpdateHandler } from "./handlers/VoiceStateUpdateHandler";
 import { VoiceActivity } from "./VoiceActivity";
 
 (async () => {
-  const BOT = new Client({ intents: IntentOptions });
+  const eave = new Client({ intents: IntentOptions });
   const updateHandler = new VoiceStateUpdateHandler(new VoiceActivity());
 
-  BOT.on(Events.ClientReady, async () => {
+  eave.on(Events.ClientReady, async () => {
     console.log("Connected");
 
-    const channel = (await BOT.channels.fetch(
+    const channel = (await eave.channels.fetch(
       process.env.CHANNEL_ID || "unwrap"
     )) as TextChannel;
 
@@ -30,17 +30,17 @@ import { VoiceActivity } from "./VoiceActivity";
       console.log(`Message: ${activity.msg}`);
 
       // FIXME: Don't wait for a minute to set the status.
-      BOT.user?.setActivity(activity.msg, {
+      eave.user?.setActivity(activity.msg, {
         type: activity.name,
         name: "Maybe",
       });
-      BOT.user?.setStatus(activity.status);
+      eave.user?.setStatus(activity.status);
     }, 60000);
   });
 
-  BOT.on(Events.VoiceStateUpdate, updateHandler.handle.bind(updateHandler));
+  eave.on(Events.VoiceStateUpdate, updateHandler.handle.bind(updateHandler));
 
-  await BOT.login(process.env.BOT_TOKEN);
+  await eave.login(process.env.BOT_TOKEN);
 })();
 
 // TODO: Account for disconnects due to bad internet.
